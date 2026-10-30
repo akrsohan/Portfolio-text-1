@@ -288,6 +288,32 @@ body.ready .rs{opacity:1;transform:none}
 .lb2 img{max-width:94vw;max-height:84vh;border-radius:10px;box-shadow:0 30px 90px rgba(0,0,0,.6);background:#fff}
 .lbx{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));right:16px;width:48px;height:48px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff;font-size:18px;cursor:pointer}
 .lbx:hover{background:#fff;color:#06060a}
+.bot{position:absolute;z-index:3;pointer-events:none}
+.xc,.ach,.cf{position:relative}
+.bb{position:absolute;inset:0;transform-origin:50% 100%;will-change:transform}
+.bd{position:absolute;inset:0;background:var(--c)}
+.bot.poly .bd{clip-path:polygon(18% 0,100% 12%,100% 60%,62% 100%,6% 100%,0 40%)}
+.bot.dome .bd{border-radius:999px 999px 0 0}.bot.arch .bd{border-radius:999px 999px 6px 6px}.bot.rect .bd{border-radius:5px}.bot.cap .bd{border-radius:999px}.bot.sq .bd{border-radius:36%}
+.fc{position:absolute;left:50%;display:flex;flex-direction:column;align-items:center;margin-left:calc(var(--e)*-1.45)}
+.ey{display:flex;gap:calc(var(--e)*.9)}
+.eye{width:var(--e);height:var(--e);border-radius:50%;background:#fff;display:grid;place-items:center;overflow:hidden;transition:transform .1s}
+.eye .pu{width:calc(var(--e)*.5);height:calc(var(--e)*.5);border-radius:50%;background:#111}
+.eye.d{background:none;overflow:visible}.eye.d .pu{width:calc(var(--e)*.62);height:calc(var(--e)*.62)}
+.mp{display:block;width:var(--e);height:calc(var(--e)*.5);margin-top:calc(var(--e)*.6);overflow:visible}
+.mp path{fill:none;stroke:#111;stroke-width:2px;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.bot.tk .mp{animation:tkm .28s ease-in-out infinite alternate;transform-origin:50% 50%}
+.bot.tk .mp path{fill:#111}
+@keyframes tkm{to{transform:scaleY(.4)}}
+.bot.wow .eye{transform:scale(1.15)}
+.sb2{position:absolute;left:calc(100% + 14px);bottom:55%;width:min(270px,56vw);padding:12px 16px;border-radius:18px 18px 18px 4px;background:#fff;color:#14102b;border:2px solid #14102b;font-size:15px;font-weight:600;line-height:1.4;box-shadow:0 14px 34px rgba(11,18,48,.28);opacity:0;transform:translateY(6px) scale(.9);transform-origin:0 100%;transition:opacity .25s,transform .25s;text-align:left}
+.sb2.on{opacity:1;transform:none}
+.sb2::after{content:"";position:absolute;left:-10px;bottom:9px;border:8px solid transparent;border-right:9px solid #14102b;border-left:0}
+.sb2 .gh{visibility:hidden;display:block}
+.sb2 .ty{position:absolute;left:16px;right:16px;top:12px}
+.vb{position:absolute;left:calc(100% + 14px);bottom:-6px;pointer-events:auto;display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:999px;border:2px solid #14102b;background:#ffd23f;color:#14102b;font:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:transform .2s}
+.vb:hover{transform:translateY(-2px)}
+.hd{padding-bottom:210px}.scr{left:auto;right:8vw}
+@media (max-width:860px){.hd{padding-bottom:180px}.scr{display:none}}
 </style>
 </head>
 <body class="ld">
@@ -360,6 +386,7 @@ body.ready .rs{opacity:1;transform:none}
 <label>Your name<input name="name" type="text" placeholder="Your name" autocomplete="name" required></label>
 <label>Your email<input name="email" type="email" placeholder="you@example.com" autocomplete="email" required></label>
 <label>Message<textarea name="message" rows="5" placeholder="Tell me about your project…" required></textarea></label>
+<input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
 <button class="bt b1" type="submit">Send message →</button>
 <p class="cs" id="cs" role="status" aria-live="polite"></p>
 </form>
@@ -406,10 +433,18 @@ addEventListener('scroll',sch,{passive:true});addEventListener('resize',sch);
 addEventListener('pointermove',function(e){mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5;sch();});
 upd();
 var cf=$('#cf');
-if(cf)cf.addEventListener('submit',function(e){e.preventDefault();var f=new FormData(cf),EMAIL='mdsohanali636@gmail.com';
-var sj='Portfolio message from '+f.get('name'),bd=f.get('message')+'\n\nFrom: '+f.get('name')+' ('+f.get('email')+')';
-location.href='mailto:'+EMAIL+'?subject='+encodeURIComponent(sj)+'&body='+encodeURIComponent(bd);
-$('#cs').textContent='Opening your email app…';});
+if(cf)cf.addEventListener('submit',function(e){
+e.preventDefault();
+var f=new FormData(cf),KEY='YOUR_ACCESS_KEY',EMAIL='mdsohanali636@gmail.com',st=$('#cs'),btn=cf.querySelector('button[type=submit]');
+if(f.get('company'))return;
+var nm=f.get('name'),em=f.get('email'),ms=f.get('message');
+function fallback(){var sj='Portfolio message from '+nm,bd=ms+'\n\nFrom: '+nm+' ('+em+')';location.href='mailto:'+EMAIL+'?subject='+encodeURIComponent(sj)+'&body='+encodeURIComponent(bd);st.textContent='Opening your email app…';}
+if(KEY==='YOUR_ACCESS_KEY'||!window.fetch){fallback();return;}
+btn.disabled=true;st.textContent='Sending…';
+fetch('https://api.web3forms.com/submit',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({access_key:KEY,name:nm,email:em,message:ms,subject:'New message from '+nm+' via your portfolio',from_name:'SohaN Portfolio'})})
+.then(function(r){return r.json();}).then(function(j){if(j&&j.success){st.textContent='Thank you! Your message has been sent.';cf.reset();}else throw new Error('x');})
+.catch(function(){fallback();}).then(function(){btn.disabled=false;});
+});
 var tok=[['k','const '],['v','sohaN'],['p',' = {\n  '],['pr','role'],['p',': '],['s','"CSE Student"'],['p',',\n  '],['pr','location'],['p',': '],['s','"Bangladesh"'],['p',',\n  '],['pr','interests'],['p',': ['],['s','"Technology"'],['p',', '],['s','"Digital Products"'],['p',', '],['s','"Problem-Solving"'],['p','],\n  '],['pr','learning'],['p',': '],['s','"hands-on"'],['p',',\n  '],['f','build'],['p','() { '],['k','return '],['s','"Ideas into projects"'],['p','; }\n};']];
 var chr=[];tok.forEach(function(q){for(var i=0;i<q[1].length;i++)chr.push([q[0],q[1][i]]);});
 var cod=$('#code'),ti=0;
@@ -449,6 +484,79 @@ var tk=false;addEventListener('scroll',function(){if(!tk){tk=true;requestAnimati
 setTimeout(function(){var h=location.hash.slice(1),el=h&&document.getElementById(h);if(el&&ids.indexOf(h)>0)el.scrollIntoView();},2300);
 })();
 </script>
+<script>
+(function(){
+var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+var S={dome:[1,.5,.3],poly:[.75,1.05,.3],arch:[.55,.85,.28],rect:[.45,.8,.2],cap:[.52,.95,.25],sq:[.82,.82,.32]};
+var M={smile:'M4 3Q12 11 20 3',frown:'M4 9Q12 1 20 9',flat:'M5 6H19',wavy:'M3 6Q6 1 9 6T15 6T21 6',o:'M12 2.8a3.2 3.2 0 1 0 .01 0Z',none:''};
+var D=[
+{s:'#home',k:'dome',c:'#ff7a2e',m:'frown',y:'d',sc:1.35,p:'left:8vw;bottom:0'},
+{s:'#experience .xc',k:'arch',c:'#f7c800',m:'wavy',y:'w',p:'right:34px;bottom:100%'},
+{s:'#works .st',k:'rect',c:'#14141a',m:'none',y:'w',p:'right:5vw;bottom:0'},
+{s:'#contact .cf',k:'sq',c:'#ff4d9d',m:'o',y:'d',p:'right:40px;bottom:100%'}];
+var W0=innerWidth<700?96:130,bots=[];
+D.forEach(function(d,i){
+var host=document.querySelector(d.s);if(!host)return;
+var W=W0*(d.sc||1),z=S[d.k],bw=W*z[0],bh=W*z[1],e=d.y==='d'?Math.max(12,bw*.1):Math.max(16,Math.min(30,bw*.2));
+var el=document.createElement('div');el.className='bot '+d.k;el.setAttribute('aria-hidden','true');
+el.style.cssText='--c:'+d.c+';--e:'+e+'px;width:'+bw+'px;height:'+bh+'px;'+(d.p||'');
+var ey='<span class="eye '+d.y+'"><i class="pu"></i></span>';
+el.innerHTML='<div class="bb"><div class="bd"></div><div class="fc" style="top:'+(z[2]*100)+'%"><div class="ey">'+ey+ey+'</div><svg class="mp" viewBox="0 0 24 12" aria-hidden="true"><path d="'+M[d.m]+'"></path></svg></div></div>';
+host.appendChild(el);
+bots.push({el:el,bb:el.firstChild,fc:el.querySelector('.fc'),path:el.querySelector('.mp path'),pu:[].slice.call(el.querySelectorAll('.pu')),ey:[].slice.call(el.querySelectorAll('.eye')),fy:z[2],bw:bw,e:e,vis:false,rot:0,tx:0,sx:1,sy:1,nb:1500+Math.random()*3000,bl:0,wo:false,hp:false,m0:d.m,ms:d.m,card:d.card,i:i});
+});
+function place(){bots.forEach(function(b){if(!b.card)return;var cd=document.getElementById('cd');if(!cd)return;b.el.style.left=(cd.offsetLeft+cd.offsetWidth-b.bw*1.05)+'px';b.el.style.bottom='100%';});}
+place();addEventListener('resize',place);addEventListener('load',place);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(place);
+if(reduce||!bots.length)return;
+var io=new IntersectionObserver(function(es){es.forEach(function(x){bots.forEach(function(b){if(b.el===x.target)b.vis=x.isIntersecting;});});});
+bots.forEach(function(b){io.observe(b.el);});
+var mx=innerWidth/2,my=innerHeight/2,pmx=mx,pmy=my,vx=0,vy=0,has=false;
+addEventListener('pointermove',function(e){mx=e.clientX;my=e.clientY;has=true;});
+function cl(v,a){return Math.max(-a,Math.min(a,v));}
+function loop(t){
+var dx=mx-pmx,dy=my-pmy;pmx=mx;pmy=my;vx+=(dx-vx)*.22;vy+=(dy-vy)*.22;
+var sp=Math.min(Math.hypot(vx,vy),40);
+bots.forEach(function(b){
+if(!b.vis)return;
+var r=b.el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height*b.fy;
+var tx=has?mx:cx+Math.cos(t/1700+b.i*2)*240,ty=has?my:cy+Math.sin(t/1300+b.i)*120;
+var ax=tx-cx,ay=ty-cy,d=Math.hypot(ax,ay)||1,k=Math.min(1,d/160),ux=ax/d,uy=ay/d,mp=b.e*.22;
+b.pu.forEach(function(p){p.style.transform='translate('+(ux*k*mp).toFixed(2)+'px,'+(uy*k*mp).toFixed(2)+'px)';});
+b.fc.style.transform='translate('+(ux*k*b.bw*.06).toFixed(2)+'px,'+(uy*k*b.bw*.035).toFixed(2)+'px)';
+b.rot+=(cl(vx*.55,11)-b.rot)*.12;b.tx+=(cl(vx*.7,9)-b.tx)*.12;
+b.sy+=(1+sp*.004-b.sy)*.12;b.sx+=(1-sp*.002-b.sx)*.12;
+var br=1+Math.sin(t/650+b.i)*.012;
+b.bb.style.transform='translateX('+b.tx.toFixed(2)+'px) rotate('+b.rot.toFixed(2)+'deg) scale('+b.sx.toFixed(3)+','+(b.sy*br).toFixed(3)+')';
+var tk=b.el.classList.contains('tk'),wow=has&&sp>20,hp=has&&!wow&&d<170&&sp<14;
+if(wow!==b.wo){b.wo=wow;b.el.classList.toggle('wow',wow);}
+var st=tk||wow?'o':(hp?'smile':b.m0);
+if(st!==b.ms){b.ms=st;b.path.setAttribute('d',M[st]);}
+if(t>b.nb){b.bl=t+130;b.nb=t+2500+Math.random()*3500;b.ey.forEach(function(x){x.style.transform='scaleY(.1)';});}
+if(b.bl&&t>b.bl){b.bl=0;b.ey.forEach(function(x){x.style.transform='';});}
+});
+requestAnimationFrame(loop);}
+requestAnimationFrame(loop);
+})();
+</script>
+<script>
+(function(){
+var bot=document.querySelector('#home .bot'),home=document.getElementById('home');if(!bot||!home)return;
+var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+var L=['Hi! I’m SohaN’s little buddy.','He’s a CSE student at Daffodil International University.','His motto: turn curiosity into ideas, and ideas into projects.','He built TenderPack and Pragati.','He organizes CSE ELITE, a learning community of about 50 students.','He joined AI Dev Fest 2026 and the Sustainable Project Competition.','Scroll down and meet my friends!','Want to talk? Say hi in the Contact section.'];
+var b=document.createElement('div');b.className='sb2';b.setAttribute('aria-hidden','true');b.innerHTML='<span class="gh"></span><span class="ty"></span>';bot.appendChild(b);
+var gh=b.querySelector('.gh'),ty=b.querySelector('.ty'),i=-1,vis=true;
+new IntersectionObserver(function(e){vis=e[0].isIntersecting;}).observe(home);
+function next(){
+if(!vis){setTimeout(next,1000);return;}
+i=(i+1)%L.length;var s=L[i];gh.textContent=s;ty.textContent='';b.classList.add('on');
+if(reduce){ty.textContent=s;setTimeout(hide,4500);return;}
+bot.classList.add('tk');var k=0;
+(function go(){k++;ty.textContent=s.slice(0,k);if(k<s.length)setTimeout(go,32);else{bot.classList.remove('tk');setTimeout(hide,2600);}})();
+}
+function hide(){b.classList.remove('on');setTimeout(next,800);}
+setTimeout(next,3400);
+})();
+</script>
 <div class="lb2" id="lb" role="dialog" aria-modal="true" aria-label="Certificate viewer" aria-hidden="true"><button class="lbx" id="lbx" type="button" aria-label="Close certificate">✕</button><img id="lbi" alt=""></div>
 <script>
 (function(){var lb=document.getElementById('lb'),im=document.getElementById('lbi'),cl=document.getElementById('lbx'),last=null;
@@ -458,3 +566,5 @@ function close(){lb.classList.remove('on');lb.setAttribute('aria-hidden','true')
 cl.onclick=close;lb.addEventListener('click',function(e){if(e.target===lb)close();});
 addEventListener('keydown',function(e){if(e.key==='Escape'&&lb.classList.contains('on'))close();});})();
 </script>
+</body>
+</html>
