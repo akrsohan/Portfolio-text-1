@@ -435,7 +435,7 @@ upd();
 var cf=$('#cf');
 if(cf)cf.addEventListener('submit',function(e){
 e.preventDefault();
-var f=new FormData(cf),KEY='YOUR_ACCESS_KEY',EMAIL='mdsohanali636@gmail.com',st=$('#cs'),btn=cf.querySelector('button[type=submit]');
+var f=new FormData(cf),KEY='41dccf69-0b2d-4113-88a0-c8f463698d1d',EMAIL='mdsohanali636@gmail.com',st=$('#cs'),btn=cf.querySelector('button[type=submit]');
 if(f.get('company'))return;
 var nm=f.get('name'),em=f.get('email'),ms=f.get('message');
 function fallback(){var sj='Portfolio message from '+nm,bd=ms+'\n\nFrom: '+nm+' ('+em+')';location.href='mailto:'+EMAIL+'?subject='+encodeURIComponent(sj)+'&body='+encodeURIComponent(bd);st.textContent='Opening your email app…';}
